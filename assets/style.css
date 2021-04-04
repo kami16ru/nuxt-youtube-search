@@ -1,0 +1,13 @@
+.animation-appear-2 {
+  animation: 2s appear;
+}
+
+.animation-appear-5 {
+  animation: 5s appear;
+}
+
+@keyframes appear {
+  0% {
+    opacity: 0;
+  }
+}
