@@ -1,5 +1,13 @@
+.animation-appear-1 {
+  animation: 1s appear;
+}
+
 .animation-appear-2 {
   animation: 2s appear;
+}
+
+.animation-appear-3 {
+  animation: 3s appear;
 }
 
 .animation-appear-5 {

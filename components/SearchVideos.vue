@@ -1,10 +1,11 @@
 <template>
   <div>
     <input
-      v-model="input"
+      v-model="searchParams.q"
       class="w-full ring-1 ring-gray-300 focus:outline-none focus:ring-indigo-800 focus:border-transparent"
       placeholder="Input keywords here..."
       type="text"
+      @keyup.enter="getVideos"
     >
     <button
       class="bg-gray-50 w-16 mx-3 ring-1 ring-gray-300 hover:bg-white rounded-md focus:outline-none"
@@ -18,15 +19,35 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'AppSearch',
   data: () => ({
-    input: ''
+    searchParams: {
+      q: '',
+      maxResults: 10,
+      order: 'viewCount',
+      key: process.env.NUXT_ENV_GOOGLE_API_KEY
+    },
+    responseErrors: [],
+    searchRequests: []
   }),
   methods: {
     getVideos () {
-      this.$router.push('/' + this.input)
-      this.input = ''
+      axios.get('https://content-youtube.googleapis.com/youtube/v3/search', {
+        params: this.searchParams
+      })
+        .then((res) => {
+          this.searchRequests.push(res.data)
+          console.log(this.searchRequests)
+
+          this.searchParams.q = ''
+
+          this.$router.push(res.data.etag)
+        }).catch((e) => {
+          this.responseErrors.push(e)
+        })
     }
   }
 }
