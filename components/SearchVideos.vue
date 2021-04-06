@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import axios from 'axios'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'AppSearch',
@@ -33,21 +33,21 @@ export default {
     responseErrors: [],
     searchRequests: []
   }),
+  computed: {
+    ...mapGetters({
+      videos: 'video/getVideos',
+      lastSearchRequest: 'video/getLastSearchRequest'
+    })
+  },
+  watch: {
+    lastSearchRequest (val) {
+      this.$router.push('video/' + val.etag)
+      // console.log(this.videos)
+    }
+  },
   methods: {
     getVideos () {
-      axios.get('https://content-youtube.googleapis.com/youtube/v3/search', {
-        params: this.searchParams
-      })
-        .then((res) => {
-          this.searchRequests.push(res.data)
-          console.log(this.searchRequests)
-
-          this.searchParams.q = ''
-
-          this.$router.push(res.data.etag)
-        }).catch((e) => {
-          this.responseErrors.push(e)
-        })
+      this.$store.dispatch('video/fetchVideos', this.searchParams)
     }
   }
 }
