@@ -9,5 +9,5 @@
    command = "npm run dev"
 
 [build]
-  command = "npm generate"
+  command = "npm run generate"
   publish = "dist"
