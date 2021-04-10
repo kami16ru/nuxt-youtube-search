@@ -2,9 +2,10 @@
   <div class="container">
     <div class="flex flex-col flex-wrap content-center justify-center">
       <div class="flex flex-row mb-12 items-center">
-        <div class="flex flex-col">
+        <p v-if="$fetchState.pending">Fetching videos...</p>
+        <div v-if="!$fetchState.pending" class="flex flex-col">
           <div
-            v-for="(video, index) in videos"
+            v-for="(video, index) in sortedVideos"
             :key="video.id"
             class="tilted-border border px-4 py-3 my-2"
             style="width: 560px"
@@ -64,21 +65,33 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   name: 'ListVideos',
   data () {
     return {
-      panels: []
+      panels: [],
+      sortedVideos: []
     }
+  },
+  async fetch () {
+    // dispatch action fetchAllPosts
+    await this.fetchVideosStats(this.videos).then(() => {
+      this.sortedVideos = this.sortByViews(this.videosStats)
+    })
   },
   computed: {
     ...mapGetters({
-      videos: 'video/getVideos'
+      videos: 'video/getVideos',
+      videosStats: 'video/getVideosStats'
     })
   },
   methods: {
+    ...mapActions({
+      fetchVideosStats: 'video/fetchVideosStats',
+      getStatsByVideoIds: 'video/getStatsByVideoIds'
+    }),
     expandPanel (videoId) {
       const panel = this.panels.find(panel => panel === videoId)
 
@@ -86,6 +99,21 @@ export default {
     },
     expanded (index) {
       return this.panels.includes(index)
+    },
+    sortByViews (videos) {
+      const sortedVideos = videos.map(item => item)
+
+      sortedVideos.sort(function (a, b) {
+        if (Number(a.statistics.viewCount) > Number(b.statistics.viewCount)) {
+          return -1
+        }
+        if (Number(a.statistics.viewCount) < Number(b.statistics.viewCount)) {
+          return 1
+        }
+        return 0
+      })
+
+      return sortedVideos
     }
   }
 }
