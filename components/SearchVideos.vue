@@ -19,7 +19,7 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapActions } from 'vuex'
 
 export default {
   name: 'AppSearch',
@@ -27,7 +27,7 @@ export default {
     searchParams: {
       q: '',
       maxResults: 10,
-      order: 'viewCount',
+      order: 'date',
       key: process.env.NUXT_ENV_GOOGLE_API_KEY
     },
     responseErrors: [],
@@ -35,7 +35,6 @@ export default {
   }),
   computed: {
     ...mapGetters({
-      videos: 'video/getVideos',
       lastSearchRequest: 'video/getLastSearchRequest'
     })
   },
@@ -46,8 +45,11 @@ export default {
     }
   },
   methods: {
+    ...mapActions({
+      fetchVideos: 'video/fetchVideos'
+    }),
     getVideos () {
-      this.$store.dispatch('video/fetchVideos', this.searchParams)
+      this.fetchVideos(this.searchParams)
     }
   }
 }

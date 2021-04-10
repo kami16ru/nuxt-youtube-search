@@ -1,30 +1,30 @@
 const fetchVideos = ({ dispatch }, options) => {
-  return dispatch('getVideos', options)
+  return dispatch('searchVideos', options)
 }
 
-const getVideos = function ({ commit }, options) {
-  const request = new Promise((resolve, reject) => {
-    this.$axios.get('https://content-youtube.googleapis.com/youtube/v3/search', {
-      params: options
-    }).then((res) => {
-      this.$axios.get(getUrl(res.data.items)).then((res) => {
-        resolve(res.data)
-      }).catch((e) => {
-        reject(e)
-      })
-    }).catch((e) => {
-      reject(e)
-    })
-  })
+const fetchVideosStats = ({ dispatch }, videos) => {
+  return dispatch('getStatsByVideoIds', videos)
+}
 
-  return request.then((res) => {
-    commit('SET_VIDEOS', res)
+const searchVideos = function ({ commit }, options) {
+  return this.$axios.get('https://content-youtube.googleapis.com/youtube/v3/search', {
+    params: options
+  }).then((res) => {
+    commit('SET_VIDEOS', res.data)
   }).catch((e) => {
     commit('SET_VUEX_ERRORS', e)
   })
 }
 
-function getUrl (videos) {
+const getStatsByVideoIds = function ({ commit }, videos) {
+  return this.$axios.get(getUrlFromVideosArray(videos)).then((res) => {
+    commit('SET_VIDEOS_STATS', res.data)
+  }).catch((e) => {
+    commit('SET_VUEX_ERRORS', e)
+  })
+}
+
+function getUrlFromVideosArray (videos) {
   const videoIds = videos.map(item => item.id.videoId)
 
   let str = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2Cstatistics&id='
@@ -40,5 +40,7 @@ function getUrl (videos) {
 
 export default {
   fetchVideos,
-  getVideos
+  fetchVideosStats,
+  searchVideos,
+  getStatsByVideoIds
 }
