@@ -2,7 +2,9 @@
   <div class="container">
     <div class="flex flex-col flex-wrap content-center justify-center">
       <div class="flex flex-row mb-12 items-center">
-        <p v-if="$fetchState.pending">Fetching videos...</p>
+        <div v-if="$fetchState.pending" class="flex flex-col h-screen flex-wrap content-center justify-center">
+          <img src="/youTubeLogo.gif" alt="Spinning youtube logo"/>
+        </div>
         <div v-if="!$fetchState.pending" class="flex flex-col">
           <div
             v-for="(video, index) in sortedVideos"
