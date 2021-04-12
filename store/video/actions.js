@@ -8,7 +8,10 @@ const fetchVideosStats = ({ dispatch }, videos) => {
 
 const searchVideos = function ({ commit }, options) {
   return this.$axios.get('https://content-youtube.googleapis.com/youtube/v3/search', {
-    params: options
+    params: {
+      ...options,
+      key: process.env.NUXT_ENV_GOOGLE_API_KEY
+    }
   }).then((res) => {
     commit('SET_VIDEOS', res.data)
   }).catch((e) => {
@@ -17,25 +20,21 @@ const searchVideos = function ({ commit }, options) {
 }
 
 const getStatsByVideoIds = function ({ commit }, videos) {
-  return this.$axios.get(getUrlFromVideosArray(videos)).then((res) => {
+  return this.$axios.get('https://youtube.googleapis.com/youtube/v3/videos', {
+    params: {
+      part: 'snippet,statistics',
+      id: getVideoIdsStr(videos),
+      key: process.env.NUXT_ENV_GOOGLE_API_KEY
+    }
+  }).then((res) => {
     commit('SET_VIDEOS_STATS', res.data)
   }).catch((e) => {
     commit('SET_VUEX_ERRORS', e)
   })
 }
 
-function getUrlFromVideosArray (videos) {
-  const videoIds = videos.map(item => item.id.videoId)
-
-  let str = 'https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2Cstatistics&id='
-
-  videoIds.forEach((videoId) => {
-    str += (videoId + '%2C')
-  })
-
-  str += '&key=' + process.env.NUXT_ENV_GOOGLE_API_KEY
-
-  return str
+function getVideoIdsStr (videos) {
+  return videos.map(item => item.id.videoId).toString()
 }
 
 export default {
