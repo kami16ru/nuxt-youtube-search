@@ -4,7 +4,7 @@
       You<span class=" text-red-600">Tube</span> <span class="text-gray-500">Search</span>
     </h1>
     <h2 class=" mx-auto text-2xl text-gray-900">
-      Last 10 relevant
+      10 latest
     </h2>
   </div>
 </template>
